@@ -232,7 +232,7 @@ android {
 
         buildTypes.release.signingConfig = signingConfigs.release
     } else {
-        buildTypes.release.signingConfig = null
+        buildTypes.release.signingConfig =  signingConfigs.debug
     }
 
     // NOTE: Lint is disabled because it slows down builds,
