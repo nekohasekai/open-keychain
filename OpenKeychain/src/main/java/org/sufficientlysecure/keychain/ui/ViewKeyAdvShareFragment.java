@@ -104,9 +104,9 @@ public class ViewKeyAdvShareFragment extends Fragment {
         vFingerprintShareButton.setOnClickListener(v -> shareFingerprint(false));
         vFingerprintClipboardButton.setOnClickListener(v -> shareFingerprint(true));
 
-        vKeyShareButton.setOnClickListener(v -> ShareKeyHelper.shareKey(getActivity(), unifiedKeyInfo.master_key_id()));
+        vKeyShareButton.setOnClickListener(v -> ShareKeyHelper.shareKey(getActivity(), unifiedKeyInfo.master_key_id(), true));
 
-        vKeyClipboardButton.setOnClickListener(v -> ShareKeyHelper.shareKeyToClipboard(getActivity(), unifiedKeyInfo.master_key_id()));
+        vKeyClipboardButton.setOnClickListener(v -> ShareKeyHelper.shareKeyToClipboard(getActivity(), unifiedKeyInfo.master_key_id(), true));
 
         vKeySshShareButton.setOnClickListener(v -> ShareKeyHelper.shareSshKey(getActivity(), unifiedKeyInfo.master_key_id()));
 

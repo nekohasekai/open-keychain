@@ -18,12 +18,6 @@
 package org.sufficientlysecure.keychain.util;
 
 
-import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.security.NoSuchAlgorithmException;
-
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -31,6 +25,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
+
 import androidx.annotation.Nullable;
 
 import org.sufficientlysecure.keychain.Constants;
@@ -44,12 +39,25 @@ import org.sufficientlysecure.keychain.pgp.exception.PgpGeneralException;
 import org.sufficientlysecure.keychain.provider.TemporaryFileProvider;
 import org.sufficientlysecure.keychain.ui.util.KeyFormattingUtils;
 import org.sufficientlysecure.keychain.ui.util.Notify;
+
+import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.security.NoSuchAlgorithmException;
+
 import timber.log.Timber;
 
 public class ShareKeyHelper {
 
     @Nullable
-    private static String getKeyContent(long masterKeyId, KeyRepository keyRepository) throws IOException {
+    private static String getKeyContent(long masterKeyId, KeyRepository keyRepository, boolean isSecret) throws IOException {
+        if (isSecret) {
+            try {
+                return keyRepository.getSecretKeyRingAsArmoredString(masterKeyId);
+            } catch (NotFoundException ignored) {
+            }
+        }
         try {
             return keyRepository.getPublicKeyRingAsArmoredString(masterKeyId);
         } catch (NotFoundException e) {
@@ -125,13 +133,13 @@ public class ShareKeyHelper {
         Notify.create(activity, R.string.key_copied_to_clipboard, Notify.Style.OK).show();
     }
 
-    private static void shareKey(Activity activity, long masterKeyId, boolean toClipboard) {
+    private static void shareKey(Activity activity, long masterKeyId, boolean toClipboard, boolean isSecret) {
         if (activity == null) {
             return;
         }
 
         try {
-            String content = getKeyContent(masterKeyId, KeyRepository.create(activity));
+            String content = getKeyContent(masterKeyId, KeyRepository.create(activity), isSecret);
             if (content == null) {
                 Notify.create(activity, R.string.error_key_not_found, Notify.Style.ERROR).show();
                 return;
@@ -172,11 +180,21 @@ public class ShareKeyHelper {
     }
 
     public static void shareKeyToClipboard(Activity activity, long masterKeyId) {
-        shareKey(activity, masterKeyId, true);
+        shareKeyToClipboard(activity, masterKeyId, false);
     }
+
+    public static void shareKeyToClipboard(Activity activity, long masterKeyId, boolean isSecret) {
+        shareKey(activity, masterKeyId, true, isSecret);
+    }
+
     public static void shareKey(Activity activity, long masterKeyId) {
         shareKey(activity, masterKeyId, false);
     }
+
+    public static void shareKey(Activity activity, long masterKeyId, boolean isSecret) {
+        shareKey(activity, masterKeyId, false, isSecret);
+    }
+
     public static void shareSshKey(Activity activity, long masterKeyId) {
         shareSshKey(activity, masterKeyId, false);
     }

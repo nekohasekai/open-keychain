@@ -211,9 +211,10 @@ public class KeyRepository extends AbstractDao {
         return new String(armoredData);
     }
 
-    public byte[] getSecretKeyRingAsArmoredData(long masterKeyId) throws NotFoundException, IOException {
+    public String getSecretKeyRingAsArmoredString(long masterKeyId) throws NotFoundException, IOException {
         byte[] data = loadSecretKeyRingData(masterKeyId);
-        return getKeyRingAsArmoredData(data);
+        byte[] armoredData = getKeyRingAsArmoredData(data);
+        return new String(armoredData);
     }
 
     public final byte[] loadPublicKeyRingData(long masterKeyId) throws NotFoundException {
